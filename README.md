@@ -1,3 +1,5 @@
+[![GitHub release](https://img.shields.io/github/release/xapphire13/snappy.svg)](https://github.com/Xapphire13/Snappy/releases/latest)
+
 # Snappy
 Filling the gaps in Windows Snap Assist
 
