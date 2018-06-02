@@ -32,6 +32,7 @@ namespace Snappy
                 Text = Resources.ApplicationName,
                 Visible = true,
                 ContextMenu = new ContextMenu(new [] {
+                    new MenuItem(Resources.Actions_Website, (object sender, EventArgs e) => Process.Start("https://github.com/Xapphire13/Snappy")),
                     new MenuItem(Resources.Actions_Quit, this.Quit)
                 })
             };

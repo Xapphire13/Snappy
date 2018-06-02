@@ -120,6 +120,9 @@
   <data name="Actions_Quit" xml:space="preserve">
     <value>Quit</value>
   </data>
+  <data name="Actions_Website" xml:space="preserve">
+    <value>Website</value>
+  </data>
   <data name="ApplicationName" xml:space="preserve">
     <value>Snappy</value>
   </data>
