@@ -21,8 +21,8 @@ $newVersion = $currentVersion -join "."
 "{`"version`": `"$newVersion`"}" | Set-Content package.json
 
 standard-changelog
+Remove-Item package.json
 git add :/
 git commit -m "release: v$newVersion"
 git tag --force "v$newVersion"
 git tag --force latest
-Remove-Item package.json
