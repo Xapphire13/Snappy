@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -10,10 +12,15 @@ namespace Snappy
 {
     public class MainApplicationContext : ApplicationContext
     {
+        private static readonly string[] protectedProcesses = new[]
+        {
+            "SearchUI"
+        };
+
         private const uint MOD_WIN = 0x0008;
         private const uint MOD_ALT = 0x0001;
         private const uint MOD_NOREPEAT = 0x4000;
-
+        
         private NotifyIcon trayIcon;
 
         [DllImport("user32.dll")]
@@ -47,22 +54,33 @@ namespace Snappy
                     MSG msg = new MSG();
                     while (GetMessage(&msg, IntPtr.Zero, 0, 0) != 0)
                     {
-                        var hWnd = GetForegroundWindow();
+                        var window = GetForegroundWindow();
                         WINDOWINFO info = new WINDOWINFO();
                         var direction = msg.wParam.ToInt32() == 0x0 ? Direction.Up : Direction.Down;
-                        if (hWnd != null && GetWindowInfo(hWnd, ref info))
+                        if (window != null && GetWindowInfo(window, ref info))
                         {
+                            GetWindowThreadProcessId(window, out int procId);
+                            var proc = Process.GetProcessById(procId);
+
+                            Debug.WriteLine($"{nameof(proc.ProcessName)}: {proc.ProcessName}");
+
+                            // Don't resize windows from protected processes
+                            if (MainApplicationContext.protectedProcesses.Contains(proc.ProcessName))
+                            {
+                                continue;
+                            }
+
                             var area = Screen.GetWorkingArea(new Point(info.rcClient.left, info.rcClient.top));
                             var leftBorder = info.rcClient.left - info.rcWindow.left;
                             var topBorder = info.rcClient.top - info.rcWindow.top;
                             var rightBorder = info.rcWindow.right - info.rcClient.right;
                             var bottomBorder = info.rcWindow.bottom - info.rcClient.bottom;
 
-                            ShowWindow(hWnd, WindowShowStyle.SW_SHOWNORMAL);
+                            ShowWindow(window, WindowShowStyle.SW_RESTORE);
                             if (direction == Direction.Up)
                             {
                                 SetWindowPos(
-                                    hWnd,
+                                    window,
                                     IntPtr.Zero,
                                     area.Left - leftBorder,
                                     area.Top - topBorder,
@@ -73,7 +91,7 @@ namespace Snappy
                             else
                             {
                                 SetWindowPos(
-                                    hWnd,
+                                    window,
                                     IntPtr.Zero,
                                     area.Left - leftBorder,
                                     area.Bottom - (area.Height / 2) - topBorder,
