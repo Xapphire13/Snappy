@@ -9,8 +9,15 @@ $currentVersion = $(Select-String -Pattern "AssemblyVersion\(`"(.+)`"\)" -Path $
 $bump = conventional-recommended-bump -p angular
 
 switch ($bump) {
-  "major" { $currentVersion[0] = 1 + $currentVersion[0] }
-  "minor" { $currentVersion[1] = 1 + $currentVersion[1] }
+  "major" {
+    $currentVersion[0] = 1 + $currentVersion[0]
+    $currentVersion[1] = 0
+    $currentVersion[2] = 0
+  }
+  "minor" {
+    $currentVersion[1] = 1 + $currentVersion[1]
+    $currentVersion[2] = 0
+  }
   "patch" { $currentVersion[2] = 1 + $currentVersion[2] }
 }
 
